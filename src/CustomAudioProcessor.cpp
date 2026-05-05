@@ -10,6 +10,11 @@
 
 namespace
 {
+    // Filters RNBO parameters before JUCE exposes them to the DAW as VST parameters.
+    // Returning nullptr keeps the RNBO parameter functional internally, but removes it
+    // from host automation and parameter lists because users do not need to edit this.
+    // it was a parameter for debugging that was not used after being exported.
+    // should have been removed before compiling to c++
     class HostParameterFactory : public RNBO::JuceAudioParameterFactory
     {
     public:
@@ -25,6 +30,8 @@ namespace
                                               int versionHint,
                                               const nlohmann::json& meta) override
         {
+            // "f" is used by the RNBO patch, but should not be user-facing in the DAW.
+            // Looking back at this comment i am proud of my proffesinalness, not anymore i guess
             if (std::strcmp(rnboObject.getParameterId(index), "f") == 0)
                 return nullptr;
 
@@ -34,6 +41,7 @@ namespace
 
     HostParameterFactory* createHostParameterFactory(const nlohmann::json& patcherDescription)
     {
+        // The RNBO processor only needs this factory while its constructor builds parameters.
         static thread_local std::unique_ptr<HostParameterFactory> factory;
         factory = std::make_unique<HostParameterFactory>(patcherDescription);
         return factory.get();
@@ -87,6 +95,7 @@ AudioProcessorEditor* CustomAudioProcessor::createEditor()
 
 int CustomAudioProcessor::getNumPrograms()
 {
+    // Keep JUCE's required single program, but do not expose RNBO presets as host programs.
     return 1;
 }
 
@@ -97,6 +106,7 @@ int CustomAudioProcessor::getCurrentProgram()
 
 void CustomAudioProcessor::setCurrentProgram(int index)
 {
+    // Program changes from the host are ignored because preset selection is hidden.
     RNBO_UNUSED(index)
 }
 
@@ -111,4 +121,9 @@ void CustomAudioProcessor::changeProgramName(int index, const juce::String& newN
     RNBO_UNUSED(index)
     RNBO_UNUSED(newName)
 }
-
+// EXTRA NOTE SURROUNDING PRESETS
+// This plugin is random, the use of presets doesnt make sense, although would have been nice
+// the architechre of the randomness would have made at least 40 parameters to save
+// thats too many and would have been a massive bloat for little reason
+// as the second example parameter was moved it would be entirely random again
+// presets may have been nice for use a ?filter table? for sustain basses
