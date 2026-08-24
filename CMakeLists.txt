@@ -42,6 +42,11 @@ add_subdirectory(
   EXCLUDE_FROM_ALL #don't build examples etc, also don't install
 )
 
+juce_add_binary_data(NeuroBassifyAssets
+  SOURCES
+  img/circuit_snake.jpg
+)
+
 # Or, instead, use Conan to get JUCE, should speed up clean builds
 # include(${RNBO_CPP_DIR}/cmake/RNBOJuce.cmake)
 

@@ -100,6 +100,7 @@ target_compile_definitions(RNBOAudioPlugin
 
 target_link_libraries(RNBOAudioPlugin
   PRIVATE
+  NeuroBassifyAssets
   juce::juce_audio_utils
   PUBLIC
   juce::juce_recommended_config_flags

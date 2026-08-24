@@ -7,17 +7,21 @@ CustomAudioEditor::CustomAudioEditor (RNBO::JuceAudioProcessor* const p, RNBO::C
 {
     _audioProcessor->AudioProcessor::addListener(this);
 
+    // Load the embedded circuit artwork once so the VST does not depend on an external image file.
+    _backgroundImage = ImageCache::getFromMemory(BinaryData::circuit_snake_jpg,
+                                                 BinaryData::circuit_snake_jpgSize);
+
     //label for the title of the plugin
     _titleLabel.setText("NeuroBassify", NotificationType::dontSendNotification);
     _titleLabel.setJustificationType(Justification::centred);
-    _titleLabel.setColour(Label::textColourId, Colours::white);
+    _titleLabel.setColour(Label::textColourId, Colour(0xffff3df2));
     _titleLabel.setFont(Font(26.0f, Font::bold));
     addAndMakeVisible(_titleLabel);
 
     //label for the example parameter knob, difference in names are explained below
-    _exampleLabel.setText("movement", NotificationType::dontSendNotification);
+    _exampleLabel.setText("Movement", NotificationType::dontSendNotification);
     _exampleLabel.setJustificationType(Justification::centred);
-    _exampleLabel.setColour(Label::textColourId, Colour(0xffd8e2ff));
+    _exampleLabel.setColour(Label::textColourId, Colour(0xff55ff70));
     _exampleLabel.setFont(Font(15.0f, Font::plain));
     addAndMakeVisible(_exampleLabel);
 
@@ -27,12 +31,12 @@ CustomAudioEditor::CustomAudioEditor (RNBO::JuceAudioProcessor* const p, RNBO::C
     _exampleSlider.setName("example");
     _exampleSlider.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
     _exampleSlider.setTextBoxStyle(Slider::TextBoxBelow, false, 96, 24);
-    _exampleSlider.setColour(Slider::rotarySliderFillColourId, Colour(0xffff6b35));
-    _exampleSlider.setColour(Slider::rotarySliderOutlineColourId, Colour(0xff283049));
-    _exampleSlider.setColour(Slider::thumbColourId, Colours::white);
-    _exampleSlider.setColour(Slider::textBoxTextColourId, Colours::white);
-    _exampleSlider.setColour(Slider::textBoxBackgroundColourId, Colour(0xff111522));
-    _exampleSlider.setColour(Slider::textBoxOutlineColourId, Colour(0xff343c56));
+    _exampleSlider.setColour(Slider::rotarySliderFillColourId, Colour(0xff31ff57));
+    _exampleSlider.setColour(Slider::rotarySliderOutlineColourId, Colour(0xccff20e6));
+    _exampleSlider.setColour(Slider::thumbColourId, Colour(0xfffff7ff));
+    _exampleSlider.setColour(Slider::textBoxTextColourId, Colour(0xff55ff70));
+    _exampleSlider.setColour(Slider::textBoxBackgroundColourId, Colour(0xdd08030f));
+    _exampleSlider.setColour(Slider::textBoxOutlineColourId, Colour(0xffff3df2));
     _exampleSlider.setTextValueSuffix(" %");
     addAndMakeVisible(_exampleSlider);
 
@@ -48,17 +52,32 @@ CustomAudioEditor::~CustomAudioEditor()
     _audioProcessor->AudioProcessor::removeListener(this);
 }
 
-    //adds gradiant to bg, very nice I think
+    // Draws the circuit artwork behind a dark overlay so the neon controls remain readable.
 void CustomAudioEditor::paint (Graphics& g)
 {
     auto bounds = getLocalBounds().toFloat();
-    ColourGradient background(Colour(0xff121522), bounds.getTopLeft(),
-                              Colour(0xff273149), bounds.getBottomRight(), false);
 
-    g.setGradientFill(background);
-    g.fillAll();
+    if (_backgroundImage.isValid())
+    {
+        g.drawImage(_backgroundImage, bounds, RectanglePlacement::fillDestination);
+        g.fillAll(Colour(0xaa05020a));
+    }
+    else
+    {
+        ColourGradient background(Colour(0xff110617), bounds.getTopLeft(),
+                                  Colour(0xff04240d), bounds.getBottomRight(), false);
+        g.setGradientFill(background);
+        g.fillAll();
+    }
 
-    g.setColour(Colour(0x22ffffff));
+    auto controlPanel = bounds.reduced(38.0f, 22.0f);
+    g.setColour(Colour(0xbb090512));
+    g.fillRoundedRectangle(controlPanel, 8.0f);
+
+    g.setColour(Colour(0xaa31ff57));
+    g.drawRoundedRectangle(controlPanel.reduced(1.0f), 8.0f, 1.4f);
+
+    g.setColour(Colour(0x88ff3df2));
     g.drawRoundedRectangle(bounds.reduced(10.0f), 8.0f, 1.0f);
 }
 

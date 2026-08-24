@@ -23,6 +23,7 @@ protected:
     Label                                       _titleLabel;
     Label                                       _exampleLabel;
     Slider                                      _exampleSlider;
+    Image                                       _backgroundImage;
     RNBO::ParameterIndex                        _exampleParameterIndex = RNBO::INVALID_INDEX;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CustomAudioEditor)

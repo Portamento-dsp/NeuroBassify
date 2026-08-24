@@ -74,6 +74,7 @@ target_compile_definitions(RNBOApp
 # here too. This is a standard CMake command.
 target_link_libraries(RNBOApp
   PRIVATE
+  NeuroBassifyAssets
   juce::juce_gui_extra
   juce::juce_audio_basics
   juce::juce_audio_devices
